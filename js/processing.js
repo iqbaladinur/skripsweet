@@ -8,16 +8,15 @@ function grayScale(imgData){
     return imgData;
 };
 
-function biner(imgData){
+function biner(imgData , treshold = 125){
 
     for (var i = 0; i < imgData.data.length; i+=4) {
         var x =(imgData.data[i]+imgData.data[i+1]+imgData.data[i+2])/3;
-        if (x>180) {
+        if (x > treshold) {
             imgData.data[i]   = imgData.data[i+1] = imgData.data[i+2] = 255;   //rgbA    
         }else{
             imgData.data[i]   = imgData.data[i+1] = imgData.data[i+2] = 0;   //rgb
         }
-        
     }
     return imgData;
 };
