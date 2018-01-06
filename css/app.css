@@ -1,0 +1,15 @@
+.has-rig{
+	margin-left: 0.15rem;
+	margin-right: 0.15rem;
+}
+.canvas{
+	border: 1px solid gray;
+}
+.is-very-small{
+	font-size: 1pt !important;
+}
+#binary{
+	border: 1px solid gray;
+	height: 200px;
+	width: 200px !important;
+}

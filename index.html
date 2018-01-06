@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Hopfield NN</title>
+	<link rel="stylesheet" type="text/css" href="./node_modules/bulma/css/bulma.css">
+	<link rel="stylesheet" type="text/css" href="./css/app.css">
+	<link href="https://use.fontawesome.com/releases/v5.0.2/css/all.css" rel="stylesheet">
+</head>
+<body>
+	<section class="section">
+		<div class="columns">
+			<div class="column is-3">
+				<nav class="panel">
+				  <p class="panel-heading">
+				    Pattern Recognition
+				  </p>
+				  <p class="panel-tabs">
+				    <a class="is-active">Train</a>
+				    <a>Test</a>
+				    <a>Summary</a>
+				    <a>About</a>
+				    <a>Github</a>
+				  </p>
+				  <div id="menu">
+					  <div class="panel-block">
+				    	<div class="file has-name is-small">
+						  <label class="file-label">
+						    <input class="file-input" type="file" accept="image/png" name="image">
+						    <span class="file-cta">
+						      <span class="file-icon">
+						        <i class="fa fa-file-image"></i>
+						      </span>
+						      <span class="file-label">
+						        Load Citra
+						      </span>
+						    </span>
+						    <span class="file-name">
+						      file name
+						    </span>
+						  </label>
+						</div>
+					  </div>
+					  <div class="panel-block">
+					  	<div class="field is-horizontal">
+					  		<div class="control has-rig">
+						  		<label>param1</label>
+						  		<input class="input" type="number">
+						  	</div>
+						  	<div class="control has-rig">
+						  		<label>param2</label>
+						  		<input class="input" type="number">
+						  	</div>
+						  	<div class="control has-rig">
+						  		<label>param3</label>
+						  		<input class="input" type="number">
+						  	</div>
+					  	</div>
+					  </div>
+					  <div class="panel-block">
+					  	<div class="control">
+					  		<label>Kenali sebagai</label>
+					  		<input type="text" class="input" name="nama_sayur" placeholder="ex: wortel">
+					  	</div>
+					  	<div>
+					  	</div>
+					  </div>
+					  <div class="panel-block">
+					  	<button class="button is-primary is-outlined">
+					  		train data
+					  	</button>
+					  </div>
+				  </div>
+				</nav>
+			</div>
+			<div class="column is-9">
+				<div class="box">
+					<h1 class="title is-size-4">Preprocessing image</h1>
+					<div class="columns">
+						<div class="column has-text-centered">
+							<canvas class="canvas" id="citraAsli" width="200" height="200"></canvas>
+							<h1>Citra Asli (200 x 200)</h1>	
+						</div>
+						<div class="column has-text-centered">
+							<canvas class="canvas" id="citraAbu" width="200" height="200"></canvas>
+							<h1>Citra Abu (200 x 200)</h1>	
+						</div>
+						<div class="column has-text-centered">
+							<canvas class="canvas" id="citraBiner" width="200" height="200"></canvas>
+							<h1 >Citra Biner (200 x 200)</h1>	
+						</div>
+						<div class="column has-text-centered">
+							<p id="binary" class="is-very-small"></p>
+							<h1 style="margin-top: 8px">Array biner</h1>	
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script type="text/javascript" src="./js/canvas.js"></script>
+	<script type="text/javascript" src="./js/processing.js"></script>
+</body>
+</html>
+<script>
+	/*canvas variabel*/
+	var citraAsli 	= new Canvas(document.getElementById("citraAsli"));
+	var citraAbu  	= new Canvas(document.getElementById("citraAbu"));
+	var citraBiner  = new Canvas(document.getElementById("citraBiner"));
+	
+	/*read image from file loaded*/
+	function readURL(input, onCallBack) {
+	    if (input.files && input.files[0]) {
+	        var reader = new FileReader();
+	        reader.onload = onCallBack;
+	        reader.readAsDataURL(input.files[0]);
+	    }
+	}
+
+	/*do preprocessing*/
+	function preProcess(citra) {
+		citraAsli.drawFromImage(citra);
+		citraAbu.drawImageByData(grayScale(citraAsli.getImageData()));
+		citraBiner.drawImageByData(biner(citraAbu.getImageData()));
+		var bin = blackAndWhiteBinary(citraBiner.getImageData());
+		$("#binary").empty().append(makeText(bin));	
+	}
+
+	/*onchange image event*/
+	$("input[name=image]").on("change", function () {
+		var citra = new Image();
+		readURL(this, function (res) {
+			citra.onload = function () {
+				preProcess(citra);
+			}
+			citra.src = res.target.result;
+		});
+	});
+</script>
