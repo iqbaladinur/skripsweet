@@ -32,7 +32,7 @@
 					  	</div>
 					  </div>
 					  <div class="panel-block">
-				    	<div class="file has-name">
+				    	<div class="file has-name is-small">
 						  <label class="file-label">
 						    <input class="file-input" type="file" accept="image/png" name="image">
 						    <span class="file-cta">
@@ -107,24 +107,17 @@
 		</div>
 	</section>
 	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script type="text/javascript" src="./js/file.js"></script>
 	<script type="text/javascript" src="./js/canvas.js"></script>
 	<script type="text/javascript" src="./js/processing.js"></script>
 </body>
 </html>
 <script>
-	/*canvas variabel*/
+	/*Canvas variable*/
 	var citraAsli 	= new Canvas(document.getElementById("citraAsli"));
 	var citraAbu  	= new Canvas(document.getElementById("citraAbu"));
 	var citraBiner  = new Canvas(document.getElementById("citraBiner"));
 	var citra = new Image();
-	/*read image from file loaded*/
-	function readURL(input, onCallBack) {
-	    if (input.files && input.files[0]) {
-	        var reader = new FileReader();
-	        reader.onload = onCallBack;
-	        reader.readAsDataURL(input.files[0]);
-	    }
-	}
 
 	/*do preprocessing*/
 	function preProcess(citra, treshold) {
@@ -132,7 +125,7 @@
 		citraAbu.drawImageByData(grayScale(citraAsli.getImageData()));
 		citraBiner.drawImageByData(biner(citraAbu.getImageData(), treshold));
 		var bin = blackAndWhiteBinary(citraBiner.getImageData());
-		$("#binary").empty().append(makeText(bin));	
+		$("#binary").empty().append(binaryArrayPrettyPrint(bin));	
 	}
 
 	/*onchange image event*/
