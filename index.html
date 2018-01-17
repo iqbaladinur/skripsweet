@@ -76,8 +76,11 @@
 					  	</div>
 					  </div>
 					  <div class="panel-block">
-					  	<button class="button is-primary is-outlined">
+					  	<button class="button is-primary is-outlined" id="train_button">
 					  		Train Data
+					  	</button>
+					  	<button class="button is-primary is-outlined" id="draw">
+					  		draw
 					  	</button>
 					  </div>
 				  </div>
@@ -117,15 +120,18 @@
 	<script type="text/javascript" src="./js/file.js"></script>
 	<script type="text/javascript" src="./js/canvas.js"></script>
 	<script type="text/javascript" src="./js/processing.js"></script>
+	<script type="text/javascript" src="./js/hopfield.js"></script>
 </body>
 </html>
 <script>
 	/*Canvas variable*/
-	var citraScale 	= new Canvas(document.getElementById("citraScale"));
-	var citraAbu  	= new Canvas(document.getElementById("citraAbu"));
-	var citraBiner  = new Canvas(document.getElementById("citraBiner"));
+	const citraScale 	= new Canvas(document.getElementById("citraScale"));
+	const citraAbu  	= new Canvas(document.getElementById("citraAbu"));
+	const citraBiner  = new Canvas(document.getElementById("citraBiner"));
 	var citra = new Image();
 	var extractedDataForTrain = [];
+	var network = new HopfieldNetwork(10000);
+	network.initialiseNodes()
 
 	/*do preprocessing*/
 	function preProcess(citra, treshold) {
@@ -135,8 +141,6 @@
 		extractedDataForTrain = getBinaryData(citraBiner.getImageData());
 		var binaryForPrint = extractedDataForTrain.slice(0);
 		$("#binary").empty().append(binaryArrayPrettyPrint(binaryForPrint));
-		console.log(extractedDataForTrain.length);
-		console.log(binaryForPrint.length);	
 	}
 
 	/*onchange image event*/
@@ -155,5 +159,17 @@
 	/*onchange treshold event*/
 	$("input[name=tresholdPreprocessing]").on("change", function () {
 		preProcess(citra, this.value);
+	});
+
+	$("#train_button").on("click", function () {
+		$("#binary").empty()
+		network.setActivations(extractedDataForTrain)
+		network.addActivationsPattern()
 	})
+
+	$("#draw").on("click", function () {
+		network.setActivations(extractedDataForTrain)
+		$("#binary").empty().append(binaryArrayPrettyPrint(network.recover()))
+	})
+
 </script>

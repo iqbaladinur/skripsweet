@@ -9,7 +9,7 @@
  * @param {imgData} type ImageData
  */
 function grayScale(imgData){
-    for (var i = 0; i < imgData.data.length; i+=4) {
+    for (let i = 0; i < imgData.data.length; i+=4) {
         var x =(imgData.data[i]+imgData.data[i+1]+imgData.data[i+2])/3;
         imgData.data[i]   = x;   //red
         imgData.data[i+1] = x;   //green
@@ -25,7 +25,7 @@ function grayScale(imgData){
  */
 function biner(imgData , tresshold = 125){
 
-    for (var i = 0; i < imgData.data.length; i+=4) {
+    for (let i = 0; i < imgData.data.length; i+=4) {
         var x =(imgData.data[i]+imgData.data[i+1]+imgData.data[i+2])/3;
         if (x > tresshold) {
             imgData.data[i]   = imgData.data[i+1] = imgData.data[i+2] = 255;   //rgbA    
@@ -42,7 +42,7 @@ function biner(imgData , tresshold = 125){
  */
 function getBinaryData(imgData) {
 	var binaryData = [];
-	for (var i = 0; i < imgData.data.length; i+=4) {
+	for (let i = 0; i < imgData.data.length; i+=4) {
         var x = imgData.data[i];
         if (x == 255)
         	binaryData.push(0);
@@ -58,7 +58,7 @@ function getBinaryData(imgData) {
  */
 function getBipolarData(imgData) {
 	var binaryData = [];
-	for (var i = 0; i < imgData.data.length; i+=4) {
+	for (let i = 0; i < imgData.data.length; i+=4) {
         var x = imgData.data[i];
         if (x == 255)
         	binaryData.push(-1);
@@ -70,7 +70,7 @@ function getBipolarData(imgData) {
 
 /*pretty print array 100 x 100*/
 function binaryArrayPrettyPrint(array) {
-	for (var i = 100, c = 0 ; i < array.length; c++, i +=100) {
+	for (let i = 100, c = 0 ; i < array.length; c++, i +=100) {
 		array.splice(i + c, 0, "<br>");
 	}
 	var text = array.join('');
