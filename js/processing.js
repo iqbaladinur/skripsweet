@@ -70,7 +70,8 @@ function getBipolarData(imgData) {
 
 /*pretty print array 100 x 100*/
 function binaryArrayPrettyPrint(array) {
-	for (let i = 100, c = 0 ; i < array.length; c++, i +=100) {
+    let dimen = Math.sqrt(array.length);
+	for (let i = dimen, c = 0 ; i < array.length; c++, i +=dimen) {
 		array.splice(i + c, 0, "<br>");
 	}
 	var text = array.join('');

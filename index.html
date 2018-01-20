@@ -104,8 +104,8 @@
 							<h1>Citra Abu (100 x 100)</h1>	
 						</div>
 						<div class="column has-text-centered">
-							<canvas class="canvas" id="citraBiner" width="100" height="100"></canvas>
-							<h1 >Citra Biner (100 x 100)</h1>	
+							<canvas class="canvas" id="citraBiner" width="96" height="96"></canvas>
+							<h1 >Citra Biner (96 x 96)</h1>	
 						</div>
 						<div class="column has-text-centered">
 							<div id="binary" class="is-very-small"></div>
@@ -121,6 +121,7 @@
 	<script type="text/javascript" src="./js/canvas.js"></script>
 	<script type="text/javascript" src="./js/processing.js"></script>
 	<script type="text/javascript" src="./js/hopfield.js"></script>
+	<script type="text/javascript" src="./js/canny.js"></script>
 </body>
 </html>
 <script>
@@ -130,8 +131,8 @@
 	const citraBiner  = new Canvas(document.getElementById("citraBiner"));
 	var citra = new Image();
 	var extractedDataForTrain = [];
-	var network = new HopfieldNetwork(10000);
-	network.initialiseNodes()
+	//var network = new HopfieldNetwork(10000);
+	//network.initialiseNodes()
 
 	/*do preprocessing*/
 	function preProcess(citra, treshold) {
@@ -143,13 +144,27 @@
 		$("#binary").empty().append(binaryArrayPrettyPrint(binaryForPrint));
 	}
 
+	/*do canny edge detection*/
+	function do_canny(citra, treshold) {
+		citraScale.drawFromImage(citra, true);
+		const canvas 	= document.getElementById('citraScale');
+		const canvasCanny 	= document.getElementById('citraAbu');
+		const imageData = CannyJS.canny(canvas, 100, 50, 1.3, 3, "sobel");
+		imageData.drawOn(canvasCanny);
+		citraBiner.drawImageExcludeBorder(citraAbu.getImageData());
+		extractedDataForTrain = getBinaryData(citraBiner.getImageData());
+		var binaryForPrint = extractedDataForTrain.slice(0);
+		$("#binary").empty().append(binaryArrayPrettyPrint(binaryForPrint));
+	}
+
 	/*onchange image event*/
 	$("input[name=image]").on("change", function () {
 		var treshold = $("input[name=tresholdPreprocessing]").val();
 		$(".file-name").empty().append(this.files[0].name);
 		readURL(this, function (res) {
 			citra.onload = function () {
-				preProcess(citra, treshold);
+				//preProcess(citra, treshold);
+				do_canny(citra, treshold);
 			}
 			$("#imgCitraAsli").attr("src", res.target.result);
 			citra.src = res.target.result;
@@ -163,13 +178,13 @@
 
 	$("#train_button").on("click", function () {
 		$("#binary").empty()
-		network.setActivations(extractedDataForTrain)
-		network.addActivationsPattern()
+		//network.setActivations(extractedDataForTrain)
+		//network.addActivationsPattern()
 	})
 
 	$("#draw").on("click", function () {
-		network.setActivations(extractedDataForTrain)
-		$("#binary").empty().append(binaryArrayPrettyPrint(network.recover()))
+		//network.setActivations(extractedDataForTrain)
+		//$("#binary").empty().append(binaryArrayPrettyPrint(network.recover()))
 	})
 
 </script>

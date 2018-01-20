@@ -123,6 +123,7 @@ HopfieldNetwork.prototype.getActivations = function() {
 	return activations;
 }
 
+
 /**
  * recover will run the hopfield recovery algorithm until the activations of
  * the nodes no longer change and the network has converged. recover will then

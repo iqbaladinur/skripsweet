@@ -21,6 +21,11 @@ var Canvas = function (cvs) {
 			this.ctx.drawImage(img, 0, 0);	
 	}
 
+	this.drawImageExcludeBorder = function (data) {
+		this.clear();
+		this.ctx.putImageData(data, -2, -2);
+	}
+
 	this.getImageData = function(){
 		return this.ctx.getImageData(0,0, this.cvs.width, this.cvs.height);
 	}
