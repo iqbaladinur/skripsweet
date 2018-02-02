@@ -23,12 +23,32 @@
 				    <a>Github</a>
 				  </p>
 				  <div id="menu">
-				  	  <div class="panel-block">
-					  	<div class="control">
-					  		<label>Binary Treshold</label>
-					  		<input type="number" class="input" name="tresholdPreprocessing" value="200">
-					  	</div>
-					  	<div>
+				  	  <!-- <div class="panel-block">
+				  	  					  	<div class="control">
+				  	  					  		<label>Binary Treshold</label>
+				  	  					  		<input type="number" class="input" name="tresholdPreprocessing" value="200">
+				  	  					  	</div>
+				  	  					  	<div>
+				  	  					  	</div>
+				  	  					  </div> -->
+					  <div class="panel-block">
+					  	<div class="field is-horizontal">
+					  		<div class="control has-rig">
+						  		<label>Sigma</label>
+						  		<input class="input" type="number" name="sigma" value="1.4">
+						  	</div>
+						  	<div class="control has-rig">
+						  		<label>Ht</label>
+						  		<input class="input" type="number" name="ht" value="100">
+						  	</div>
+						  	<div class="control has-rig">
+						  		<label>Lt</label>
+						  		<input class="input" type="number" name="lt" value="50">
+						  	</div>
+						  	<div class="control has-rig">
+						  		<label>Kernel</label>
+						  		<input class="input" type="number" name="kernel" value="3">
+						  	</div>
 					  	</div>
 					  </div>
 					  <div class="panel-block">
@@ -96,16 +116,16 @@
 					</div>
 					<div class="columns">
 						<div class="column has-text-centered">
-							<canvas class="canvas" id="citraScale" width="100" height="100"></canvas>
-							<h1>Citra Scale (100 x 100)</h1>	
+							<canvas class="canvas" id="citraScale" width="80" height="80"></canvas>
+							<h1>Citra Scale (80 x 80)</h1>	
 						</div>
 						<div class="column has-text-centered">
-							<canvas class="canvas" id="citraAbu" width="100" height="100"></canvas>
-							<h1>Citra Abu (100 x 100)</h1>	
+							<canvas class="canvas" id="citraAbu" width="80" height="80"></canvas>
+							<h1>Canny ED (80 x 80)</h1>	
 						</div>
 						<div class="column has-text-centered">
-							<canvas class="canvas" id="citraBiner" width="96" height="96"></canvas>
-							<h1 >Citra Biner (96 x 96)</h1>	
+							<canvas class="canvas" id="citraBiner" width="76" height="76"></canvas>
+							<h1 >Citra Invert (76 x 76)</h1>	
 						</div>
 						<div class="column has-text-centered">
 							<div id="binary" class="is-very-small"></div>
@@ -128,11 +148,11 @@
 	/*Canvas variable*/
 	const citraScale 	= new Canvas(document.getElementById("citraScale"));
 	const citraAbu  	= new Canvas(document.getElementById("citraAbu"));
-	const citraBiner  = new Canvas(document.getElementById("citraBiner"));
+	const citraBiner  	= new Canvas(document.getElementById("citraBiner"));
 	var citra = new Image();
 	var extractedDataForTrain = [];
-	//var network = new HopfieldNetwork(10000);
-	//network.initialiseNodes()
+	var network = new HopfieldNetwork(5776);
+	network.initialiseNodes()
 
 	/*do preprocessing*/
 	function preProcess(citra, treshold) {
@@ -145,13 +165,13 @@
 	}
 
 	/*do canny edge detection*/
-	function do_canny(citra, treshold) {
+	function do_canny(citra, treshold, ht, lt, sigma, kernel) {
 		citraScale.drawFromImage(citra, true);
 		const canvas 	= document.getElementById('citraScale');
 		const canvasCanny 	= document.getElementById('citraAbu');
-		const imageData = CannyJS.canny(canvas, 100, 50, 1.3, 3, "sobel");
+		const imageData = CannyJS.canny(canvas, ht, lt, sigma, kernel, "prewitt");
 		imageData.drawOn(canvasCanny);
-		citraBiner.drawImageExcludeBorder(citraAbu.getImageData());
+		citraBiner.drawImageExcludeBorder(invertColor(citraAbu.getImageData()));
 		extractedDataForTrain = getBinaryData(citraBiner.getImageData());
 		var binaryForPrint = extractedDataForTrain.slice(0);
 		$("#binary").empty().append(binaryArrayPrettyPrint(binaryForPrint));
@@ -159,12 +179,16 @@
 
 	/*onchange image event*/
 	$("input[name=image]").on("change", function () {
-		var treshold = $("input[name=tresholdPreprocessing]").val();
+		const treshold 	= $("input[name=tresholdPreprocessing]").val();
+		const sigma    	= $("input[name=sigma]").val();
+		const ht    	= $("input[name=ht]").val();
+		const lt 		= $("input[name=lt]").val();
+		const kernel    = $("input[name=kernel]").val();
 		$(".file-name").empty().append(this.files[0].name);
 		readURL(this, function (res) {
 			citra.onload = function () {
 				//preProcess(citra, treshold);
-				do_canny(citra, treshold);
+				do_canny(citra, treshold, ht, lt, sigma, kernel);
 			}
 			$("#imgCitraAsli").attr("src", res.target.result);
 			citra.src = res.target.result;
@@ -176,15 +200,52 @@
 		preProcess(citra, this.value);
 	});
 
+	$("input[name=sigma]").on("change", function () {
+		const treshold 	= $("input[name=tresholdPreprocessing]").val();
+		const sigma    	= $("input[name=sigma]").val();
+		const ht    	= $("input[name=ht]").val();
+		const lt 		= $("input[name=lt]").val();
+		const kernel    = $("input[name=kernel]").val();
+		do_canny(citra, treshold, ht, lt, sigma, kernel);
+	});
+	
+	$("input[name=ht]").on("change", function () {
+		const treshold 	= $("input[name=tresholdPreprocessing]").val();
+		const sigma    	= $("input[name=sigma]").val();
+		const ht    	= $("input[name=ht]").val();
+		const lt 		= $("input[name=lt]").val();
+		const kernel    = $("input[name=kernel]").val();
+		do_canny(citra, treshold, ht, lt, sigma, kernel);
+	});
+	
+	$("input[name=lt]").on("change", function () {
+		const treshold 	= $("input[name=tresholdPreprocessing]").val();
+		const sigma    	= $("input[name=sigma]").val();
+		const ht    	= $("input[name=ht]").val();
+		const lt 		= $("input[name=lt]").val();
+		const kernel    = $("input[name=kernel]").val();
+		do_canny(citra, treshold, ht, lt, sigma, kernel);
+	});
+
+	$("input[name=kernel]").on("change", function () {
+		const treshold 	= $("input[name=tresholdPreprocessing]").val();
+		const sigma    	= $("input[name=sigma]").val();
+		const ht    	= $("input[name=ht]").val();
+		const lt 		= $("input[name=lt]").val();
+		const kernel    = $("input[name=kernel]").val();
+		do_canny(citra, treshold, ht, lt, sigma, kernel);
+	});
+
+
 	$("#train_button").on("click", function () {
 		$("#binary").empty()
-		//network.setActivations(extractedDataForTrain)
-		//network.addActivationsPattern()
+		network.setActivations(extractedDataForTrain)
+		network.addActivationsPattern()
 	})
 
 	$("#draw").on("click", function () {
-		//network.setActivations(extractedDataForTrain)
-		//$("#binary").empty().append(binaryArrayPrettyPrint(network.recover()))
+		network.setActivations(extractedDataForTrain)
+		$("#binary").empty().append(binaryArrayPrettyPrint(network.recover()))
 	})
 
 </script>

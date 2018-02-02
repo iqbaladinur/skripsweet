@@ -4,6 +4,12 @@
 }
 .canvas{
 	border: 1px solid #e7e7e7;
+	image-rendering: optimizeSpeed;             /* Older versions of FF          */
+	image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+	image-rendering: -webkit-optimize-contrast; /* Safari                        */
+	image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+	image-rendering: pixelated;                 /* Awesome future-browsers       */
+	-ms-interpolation-mode: nearest-neighbor;   /* IE                            */
 }
 .is-very-small{
 	font-size: 1pt !important;
@@ -15,3 +21,7 @@
 	border: 1px solid #e7e7e7;	
 	padding: 20px
 }
+/* #citraBiner{
+	width: 200px !important;
+	height: 200px !important;
+} */

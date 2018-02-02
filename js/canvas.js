@@ -34,6 +34,10 @@ var Canvas = function (cvs) {
 		this.clear();
 		this.ctx.putImageData(data, 0, 0);
 	}
+
+	this.getContext = function () {
+		return this.ctx;
+	}
 }
 
 

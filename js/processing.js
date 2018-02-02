@@ -18,6 +18,19 @@ function grayScale(imgData){
     return imgData;
 };
 
+/* invertColor() function
+ * convert type ImageData object from Canvas to inverted true color
+ * @param {imgData} type ImageData
+ */
+function invertColor(imgData){
+    for (let i = 0; i < imgData.data.length; i+=4) {
+        imgData.data[i] = 255 - imgData.data[i];        //red
+        imgData.data[i+1] = 255 - imgData.data[i+1];    //green
+        imgData.data[i+2] = 255 - imgData.data[i+2];    //blue
+    }
+    return imgData;
+};
+
 /* biner() function
  * convert type ImageData object from Canvas to black and white 8bit true color rgba(255, 255, 255, 1) or rgba(0, 0, 0, 1)
  * @param {imgData} type ImageData
