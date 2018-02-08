@@ -71,20 +71,20 @@
 							</div>
 				    	</div>
 					  </div>
-					  <div class="panel-block">
+					  <!-- <div class="panel-block">
 					  	<div class="field is-horizontal">
 					  		<div class="control has-rig">
-						  		<label>param1</label>
-						  		<input class="input" type="number">
-						  	</div>
-						  	<div class="control has-rig">
-						  		<label>param2</label>
-						  		<input class="input" type="number">
-						  	</div>
-						  	<div class="control has-rig">
-						  		<label>param3</label>
-						  		<input class="input" type="number">
-						  	</div>
+					  						  		<label>param1</label>
+					  						  		<input class="input" type="number">
+					  						  	</div>
+					  						  	<div class="control has-rig">
+					  						  		<label>param2</label>
+					  						  		<input class="input" type="number">
+					  						  	</div>
+					  						  	<div class="control has-rig">
+					  						  		<label>param3</label>
+					  						  		<input class="input" type="number">
+					  						  	</div>
 					  	</div>
 					  </div>
 					  <div class="panel-block">
@@ -94,13 +94,18 @@
 					  	</div>
 					  	<div>
 					  	</div>
-					  </div>
+					  </div> -->
 					  <div class="panel-block">
 					  	<button class="button is-primary is-outlined" id="train_button">
 					  		Train Data
 					  	</button>
 					  	<button class="button is-primary is-outlined" id="draw">
-					  		draw
+					  		Test
+					  	</button>
+					  </div>
+					  <div class="panel-block">
+					  	<button class="button is-primary is-outlined" id="clearData">
+					  		Clear
 					  	</button>
 					  </div>
 				  </div>
@@ -129,7 +134,11 @@
 						</div>
 						<div class="column has-text-centered">
 							<div id="binary" class="is-very-small"></div>
-							<h1 style="margin-top: 8px">Array biner</h1>	
+							<h1 style="margin-top: 0px">input</h1>	
+						</div>
+						<div class="column has-text-centered">
+							<div id="outputData" class="is-very-small"></div>
+							<h1 style="margin-top: 0px">output</h1>	
 						</div>
 					</div>
 				</div>
@@ -238,14 +247,20 @@
 
 
 	$("#train_button").on("click", function () {
-		$("#binary").empty()
-		network.setActivations(extractedDataForTrain)
-		network.addActivationsPattern()
+		network.addPattern(extractedDataForTrain);
+		network.convertByCurrentAct(extractedDataForTrain);
+		alert("trained")
+
 	})
 
 	$("#draw").on("click", function () {
-		network.setActivations(extractedDataForTrain)
-		$("#binary").empty().append(binaryArrayPrettyPrint(network.recover()))
+		network.convertByCurrentAct(extractedDataForTrain);
+		$("#outputData").empty().append(binaryArrayPrettyPrint(network.recover()));
+		alert("finish tested");
+	})
+
+	$("#clearData").on("click", function () {
+		$('#outputData').empty();
 	})
 
 </script>

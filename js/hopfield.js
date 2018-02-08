@@ -1,4 +1,4 @@
- /**
+/**
  * Node is a single hopfield node class. Each node takes in the weight array
  * which denotes the connectivity of the node.
  */
@@ -33,7 +33,7 @@ Node.prototype.calculateActivation = function(activations) {
 	var sum = 0;
 	var newActivation = 0;
 	for (var i = 0; i < activations.length; i++) {
-		sum += activations[i] * this.weights[i];
+		sum += activations[i] * this.weights[i] * 1;
 	}
 	if (sum > 0)
 		newActivation = 1;
@@ -112,6 +112,23 @@ HopfieldNetwork.prototype.setActivations = function(activations) {
 	}
 }
 
+HopfieldNetwork.prototype.convertByCurrentAct = function (activations) {
+	if (activations.length !== this.nodes.length)
+		throw "Number of activations does not match number of network nodes!";
+
+	for (var i = 0; i < this.nodes.length; i++) {
+		if (this.nodes[i].activation === 0 && activations[i] === 0 ) {
+			this.nodes[i].activation = 0
+		}else if(this.nodes[i].activation === 1 && activations[i] === 0) {
+			this.nodes[i].activation = -1
+		}else if(this.nodes[i].activation === -1 && activations[i] === 0) {
+			this.nodes[i].activation = -1
+		}else{
+			this.nodes[i].activation = 1
+		}
+	}	
+}
+
 /**
  * getActivations will return an array of all the activations in order of the
  * nodes.
@@ -122,7 +139,6 @@ HopfieldNetwork.prototype.getActivations = function() {
 		activations[i] = this.nodes[i].activation;
 	return activations;
 }
-
 
 /**
  * recover will run the hopfield recovery algorithm until the activations of

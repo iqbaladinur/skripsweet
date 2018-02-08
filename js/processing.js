@@ -81,8 +81,28 @@ function getBipolarData(imgData) {
     return binaryData;
 }
 
+function binaryToBipolar(array) {
+    let bipolar = [];
+    array.forEach(function (el) {
+        if (el == 0)
+            bipolar.push(-1);
+        else
+            bipolar.push(1);
+    })
+    return bipolar;
+}
+
+function clearArray(array) {
+    let clearBiner = [];
+    for (let i = 0; i < array.length; i++) {
+        clearBiner[i] = array[i] === -1 ? 0 : array[i];
+    }
+    return clearBiner;
+}
+
 /*pretty print array 100 x 100*/
-function binaryArrayPrettyPrint(array) {
+function binaryArrayPrettyPrint(arrayInput) {
+    let array = clearArray(arrayInput);
     let dimen = Math.sqrt(array.length);
 	for (let i = dimen, c = 0 ; i < array.length; c++, i +=dimen) {
 		array.splice(i + c, 0, "<br>");
