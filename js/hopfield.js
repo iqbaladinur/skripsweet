@@ -72,6 +72,7 @@ HopfieldNetwork.prototype.importData = function(nodes) {
 		this.nodes[i] = new Node(nodes[i].weights, nodes[i].activations, nodes[i].index );
 	}
 
+	this.convertByCurrentAct(this.getActivations());
 	console.log("loaded");
 }
 
