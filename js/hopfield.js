@@ -33,7 +33,7 @@ Node.prototype.calculateActivation = function(activations) {
 	var sum = 0;
 	var newActivation = 0;
 	for (var i = 0; i < activations.length; i++) {
-		sum += activations[i] * this.weights[i] * 1;
+		sum += activations[i] * this.weights[i];
 	}
 	if (sum > 0)
 		newActivation = 1;
@@ -51,6 +51,28 @@ Node.prototype.calculateActivation = function(activations) {
 function HopfieldNetwork(nodeNum=4) {
 	this.nodeNum = nodeNum; // Number of nodes that is in the network
 	this.nodes = []; // Array to contain the nodes
+}
+
+
+
+/*
+ * saveCurrentData will return json of nodes object that actually contains trained data
+ */
+HopfieldNetwork.prototype.saveCurrentData = function() {
+	const jsonNode = JSON.stringify(this.nodes);
+	return jsonNode;
+}
+
+/*
+ * importData will import nodes object that contains data to initialized network
+ */
+HopfieldNetwork.prototype.importData = function(nodes) {
+	this.nodes = [];
+	for (let i = 0; i < nodes.length; i++) {
+		this.nodes[i] = new Node(nodes[i].weights, nodes[i].activations, nodes[i].index );
+	}
+
+	console.log("loaded");
 }
 
 /**

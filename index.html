@@ -13,54 +13,48 @@
 			<div class="column is-3">
 				<nav class="panel">
 				  <p class="panel-heading">
-				    Pattern Recognition
+				    Hopfield Neural Network 
 				  </p>
 				  <p class="panel-tabs">
 				    <a class="is-active">Train</a>
-				    <a>Test</a>
 				    <a>Summary</a>
 				    <a>About</a>
 				    <a>Github</a>
 				  </p>
 				  <div id="menu">
-				  	  <!-- <div class="panel-block">
-				  	  					  	<div class="control">
-				  	  					  		<label>Binary Treshold</label>
-				  	  					  		<input type="number" class="input" name="tresholdPreprocessing" value="200">
-				  	  					  	</div>
-				  	  					  	<div>
-				  	  					  	</div>
-				  	  					  </div> -->
 					  <div class="panel-block">
-					  	<div class="field is-horizontal">
-					  		<div class="control has-rig">
-						  		<label>Sigma</label>
-						  		<input class="input" type="number" name="sigma" value="1.4">
-						  	</div>
-						  	<div class="control has-rig">
-						  		<label>Ht</label>
-						  		<input class="input" type="number" name="ht" value="100">
-						  	</div>
-						  	<div class="control has-rig">
-						  		<label>Lt</label>
-						  		<input class="input" type="number" name="lt" value="50">
-						  	</div>
-						  	<div class="control has-rig">
-						  		<label>Kernel</label>
-						  		<input class="input" type="number" name="kernel" value="3">
+					  	<div>
+					  		<h1 class="is-size-6">Canny Params</h1>
+					  		<div class="field is-horizontal">
+						  		<div class="control has-rig">
+							  		<small>Sigma</small>
+							  		<input class="input" type="number" name="sigma" value="1.4">
+							  	</div>
+							  	<div class="control has-rig">
+							  		<small>Ht</small>
+							  		<input class="input" type="number" name="ht" value="100">
+							  	</div>
+							  	<div class="control has-rig">
+							  		<small>Lt</small>
+							  		<input class="input" type="number" name="lt" value="50">
+							  	</div>
+							  	<div class="control has-rig">
+							  		<small>Kernel</small>
+							  		<input class="input" type="number" name="kernel" value="3">
+							  	</div>
 						  	</div>
 					  	</div>
 					  </div>
 					  <div class="panel-block">
-				    	<div class="field">
-				    		<div class="file has-name is-small is-primary is-boxed">
+				    	<div class="field is-fullwidth" style="width: 100%">
+				    		<div class="file has-name is-small is-primary is-boxed is-fullwidth">
 							  <label class="file-label">
 							    <input class="file-input" type="file" accept="image/*" name="image">
 							    <span class="file-cta is-warning">
 							      <span class="file-icon">
 							        <i class="fa fa-file-image"></i>
 							      </span>
-							      <span class="file-label">
+							      <span class="file-label has-text-centered">
 							        Load Image
 							      </span>
 							    </span>
@@ -96,16 +90,37 @@
 					  	</div>
 					  </div> -->
 					  <div class="panel-block">
-					  	<button class="button is-primary is-outlined" id="train_button">
+					  	<button class="is-fullwidth button is-dark" id="train_button">
 					  		Train Data
-					  	</button>
-					  	<button class="button is-primary is-outlined" id="draw">
-					  		Test
 					  	</button>
 					  </div>
 					  <div class="panel-block">
-					  	<button class="button is-primary is-outlined" id="clearData">
-					  		Clear
+					  	<button class="is-fullwidth button is-dark" id="draw">
+					  		Test Data
+					  	</button>
+					  </div>
+					  <div class="panel-block">
+					  	<button class="is-fullwidth button is-dark" id="clearData">
+					  		Clear Output View
+					  	</button>
+					  </div>
+					  <div class="panel-block">
+					  	<div class="field has-text-centered">
+					  		<div class="file">
+							  <label class="file-label">
+							    <input class="file-input is-fullwidth" type="file" name="importSaveData">
+							    <span class="file-cta">
+							      <span class="file-label">
+							        Import Data
+							      </span>
+							    </span>
+							  </label>
+							</div>
+					  	</div>
+					  </div>
+					  <div class="panel-block">
+					  	<button class="is-fullwidth button is-dark" id="saveData">
+					  		Export Data
 					  	</button>
 					  </div>
 				  </div>
@@ -146,6 +161,7 @@
 		</div>
 	</section>
 	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script type="text/javascript" src="./js/filesaver.min.js"></script>
 	<script type="text/javascript" src="./js/file.js"></script>
 	<script type="text/javascript" src="./js/canvas.js"></script>
 	<script type="text/javascript" src="./js/processing.js"></script>
@@ -251,16 +267,28 @@
 		network.convertByCurrentAct(extractedDataForTrain);
 		alert("trained")
 
-	})
+	});
 
 	$("#draw").on("click", function () {
 		network.convertByCurrentAct(extractedDataForTrain);
 		$("#outputData").empty().append(binaryArrayPrettyPrint(network.recover()));
-		alert("finish tested");
-	})
+		alert("finished");
+	});
 
 	$("#clearData").on("click", function () {
 		$('#outputData').empty();
-	})
+	});
+
+	$("#saveData").on("click", function () {
+		const dataToSave = network.saveCurrentData();
+		var blob = new Blob([dataToSave], {type: "text/plain;charset=utf-8"});
+  		saveAs(blob, "currentState.txt");
+	});
+
+	$("input[name=importSaveData]").on("change", function() {
+		readTxt(this, function(res) {
+			network.importData(JSON.parse(res.target.result));
+		})
+	});
 
 </script>
