@@ -101,8 +101,8 @@ function clearArray(array) {
 }
 
 /*pretty print array 100 x 100*/
-function binaryArrayPrettyPrint(arrayInput) {
-    let array = clearArray(arrayInput);
+function binaryArrayPrettyPrint(array) {
+    //let array = clearArray(arrayInput);
     let dimen = Math.sqrt(array.length);
 	for (let i = dimen, c = 0 ; i < array.length; c++, i +=dimen) {
 		array.splice(i + c, 0, "<br>");

@@ -65,30 +65,14 @@
 							</div>
 				    	</div>
 					  </div>
-					  <!-- <div class="panel-block">
-					  	<div class="field is-horizontal">
-					  		<div class="control has-rig">
-					  						  		<label>param1</label>
-					  						  		<input class="input" type="number">
-					  						  	</div>
-					  						  	<div class="control has-rig">
-					  						  		<label>param2</label>
-					  						  		<input class="input" type="number">
-					  						  	</div>
-					  						  	<div class="control has-rig">
-					  						  		<label>param3</label>
-					  						  		<input class="input" type="number">
-					  						  	</div>
-					  	</div>
-					  </div>
 					  <div class="panel-block">
 					  	<div class="control">
-					  		<label>Recognize As</label>
+					  		<label>Recognize as: </label>
 					  		<input type="text" class="input" name="nama_sayur" placeholder="ex: wortel">
 					  	</div>
 					  	<div>
 					  	</div>
-					  </div> -->
+					  </div>
 					  <div class="panel-block">
 					  	<button class="is-fullwidth button is-dark" id="train_button">
 					  		Train Data
@@ -155,6 +139,15 @@
 							<div id="outputData" class="is-very-small"></div>
 							<h1 style="margin-top: 5px">recovered pattern</h1>	
 						</div>
+					</div>
+				</div>
+				<div class="my-box" style="margin-top:10px">
+					<h1 class="title is-size-5">Output Data</h1>
+					<div class="my-box">
+						<ul>
+							<li>Recognised As : <b id="labelName"></b> </li>
+							<li>Recovered pattern : <b id="recoveredValue"></b> </li>
+						</ul>
 					</div>
 				</div>
 			</div>
@@ -264,16 +257,31 @@
 
 	/*train new pattern*/
 	$("#train_button").on("click", function () {
-		network.addPattern(extractedDataForTrain);
-		network.convertByCurrentAct(extractedDataForTrain);
-		alert("trained")
-
+		const label = $("input[name=nama_sayur]").val();
+		if (label) {
+			network.addPattern(extractedDataForTrain);
+			network.convertByCurrentAct(extractedDataForTrain);
+			network.pushPatternLabeled(extractedDataForTrain, label);
+			alert("trained");
+		}else{
+			alert("Label belum ditentukan!");
+		}
 	});
 
 	/*test pattern*/
 	$("#draw").on("click", function () {
 		network.convertByCurrentAct(extractedDataForTrain);
-		$("#outputData").empty().append(binaryArrayPrettyPrint(network.recover()));
+		var outputRecovered = clearArray(network.recover());
+		let resultCompared = network.compareOutput(outputRecovered);
+		if (!resultCompared) {
+			$("#labelName").empty().append("not recognized");
+			$("#recoveredValue").empty().append("0 %");
+		}else{
+			$("#labelName").empty().append(resultCompared.label);
+			$("#recoveredValue").empty().append((resultCompared.matchValue / resultCompared.totalValue * 100) + '%');
+		}
+
+		$("#outputData").empty().append(binaryArrayPrettyPrint(outputRecovered));
 		alert("finished");
 	});
 
@@ -292,7 +300,8 @@
 	/*import data*/
 	$("input[name=importSaveData]").on("change", function() {
 		readTxt(this, function(res) {
-			network.importData(JSON.parse(res.target.result));
+			const data = JSON.parse(res.target.result);
+			network.importData(data.nodes, data.savedPattern);
 		})
 	});
 

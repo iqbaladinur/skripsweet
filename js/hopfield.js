@@ -1,4 +1,42 @@
 /**
+ * Pattern is a class contains trained pattern on the hopfield neural network
+ * the object store input pattern and the labels
+ */
+
+function Pattern(arrayOfPattern, labelName, trueval = null){
+	this.pattern = arrayOfPattern;
+	this.label   = labelName;
+	this.trueVal = (trueval)||this.countTrue();
+}
+
+/**
+ * [compare description]
+ * @param  {[array]} input [array of compared]
+ * @return {[number]}      [amount of matching pattern]
+ */
+Pattern.prototype.compare = function(input) {
+	if (input.length !== this.pattern.length)
+		throw "pattern length not match, shoulf be match!";
+	/*do compare here*/
+	let matches_vector = 0;
+	for (let i = 0; i < this.pattern.length; i++) {
+		matches_vector += this.pattern[i] === input[i] && this.pattern[i] === 1 ? 1 : 0;
+	}
+
+	return matches_vector;
+}
+
+Pattern.prototype.countTrue = function(){
+	let count = 0;
+	for (let i = 0; i < this.pattern.length; i++) {
+		count += this.pattern[i] === 1 ? 1 : 0;
+	}
+
+	return count;
+}
+
+
+/**
  * Node is a single hopfield node class. Each node takes in the weight array
  * which denotes the connectivity of the node.
  */
@@ -51,27 +89,74 @@ Node.prototype.calculateActivation = function(activations) {
 function HopfieldNetwork(nodeNum=4) {
 	this.nodeNum = nodeNum; // Number of nodes that is in the network
 	this.nodes = []; // Array to contain the nodes
+	this.pattern = []; // Array to contain the learned patterns
 }
 
+/**
+ * pushPatternLabeled will save pattern learned in network object for checking later
+ * @param  {[array]} pattern [binary array of pattern]
+ * @param  {[string]} label  [String text for naming the pattern]
+ * @return {[void]}
+ */
+HopfieldNetwork.prototype.pushPatternLabeled = function(pattern, label) {
+	this.pattern.push(new Pattern(pattern, label));
+}
 
+/**
+ * [compareOutput description] compareOutput from recover check the best matched pattern that was learned
+ * @param  {[array]} outputArray [binary array of output pattern]
+ * @return {[object]}            [return object of matched pattern]
+ */
+HopfieldNetwork.prototype.compareOutput = function(outputArray) {
+	const sum = (accumulator, currentValue) => accumulator + currentValue;
+	let countAllMatches = [];
+	if (outputArray.reduce(sum) !== 0) {
+		/*compate pattern here*/
+		for (let i = 0; i < this.pattern.length; i++) {
+			countAllMatches[i] = this.pattern[i].compare(outputArray);
+		}
+		const indexOfMatchedPattern = countAllMatches.indexOf(Math.max.apply(Math, countAllMatches));
+
+		const matchedPattern = {
+			matchValue : countAllMatches[indexOfMatchedPattern],
+			totalValue : this.pattern[indexOfMatchedPattern].trueVal,
+			label: this.pattern[indexOfMatchedPattern].label
+		}
+
+		return matchedPattern;
+	}else{
+		return false;
+	}
+}
 
 /*
  * saveCurrentData will return json of nodes object that actually contains trained data
  */
 HopfieldNetwork.prototype.saveCurrentData = function() {
-	const jsonNode = JSON.stringify(this.nodes);
-	return jsonNode;
+	/*const jsonNode = JSON.stringify(this.nodes);
+	return jsonNode;*/
+	var jsonCurrentState = {
+		nodes: this.nodes,
+		savedPattern: this.pattern
+	};
+
+	return JSON.stringify(jsonCurrentState);
 }
 
 /*
  * importData will import nodes object that contains data to initialized network
  */
-HopfieldNetwork.prototype.importData = function(nodes) {
+HopfieldNetwork.prototype.importData = function(nodes, pattern) {
 	this.nodes = [];
+	this.pattern = [];
 	for (let i = 0; i < nodes.length; i++) {
 		this.nodes[i] = new Node(nodes[i].weights, nodes[i].activations, nodes[i].index );
 	}
-	
+
+	for (let i = 0; i < pattern.length; i++) {
+		this.pattern[i] = new Pattern(pattern[i].pattern, pattern[i].label, pattern[i].trueVal);
+	}
+
 	this.convertByCurrentAct(this.getActivations());
 	console.log("loaded");
 }
@@ -112,7 +197,7 @@ HopfieldNetwork.prototype.addPattern = function(patternArray) {
 				newPattern[j] = 0;
 		}
 		this.nodes[i].addTransposedPattern(newPattern);
-	}
+	} 
 }
 
 /**
