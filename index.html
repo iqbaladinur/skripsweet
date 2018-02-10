@@ -16,7 +16,7 @@
 				    Hopfield Neural Network 
 				  </p>
 				  <p class="panel-tabs">
-				    <a class="is-active">Train</a>
+				    <a class="is-active">Train & Testing</a>
 				    <a>Summary</a>
 				    <a>About</a>
 				    <a>Github</a>
@@ -130,7 +130,7 @@
 				<div class="my-box">
 					<h1 class="title is-size-5">Preprocessing Image</h1>
 					<div class="has-text-centered my-box" style="margin-bottom: 50px">
-						<img id="imgCitraAsli" src="./static/icon/fileImage.png" class="canvas" width="200px" height="200px">
+						<img id="imgCitraAsli" src="./static/icon/fileImage.png" width="200px" height="200px">
 						<br>
 						<h1>Citra Asli</h1>
 					</div>
@@ -149,11 +149,11 @@
 						</div>
 						<div class="column has-text-centered">
 							<div id="binary" class="is-very-small"></div>
-							<h1 style="margin-top: 0px">input</h1>	
+							<h1 style="margin-top: 5px">input array</h1>	
 						</div>
 						<div class="column has-text-centered">
 							<div id="outputData" class="is-very-small"></div>
-							<h1 style="margin-top: 0px">output</h1>	
+							<h1 style="margin-top: 5px">recovered pattern</h1>	
 						</div>
 					</div>
 				</div>
@@ -176,18 +176,20 @@
 	const citraBiner  	= new Canvas(document.getElementById("citraBiner"));
 	var citra = new Image();
 	var extractedDataForTrain = [];
+
+	/*init network*/
 	var network = new HopfieldNetwork(5776);
 	network.initialiseNodes()
 
 	/*do preprocessing*/
-	function preProcess(citra, treshold) {
+	/*function preProcess(citra, treshold) {
 		citraScale.drawFromImage(citra, true);
 		citraAbu.drawImageByData(grayScale(citraScale.getImageData()));
 		citraBiner.drawImageByData(biner(citraAbu.getImageData(), treshold));
 		extractedDataForTrain = getBinaryData(citraBiner.getImageData());
 		var binaryForPrint = extractedDataForTrain.slice(0);
 		$("#binary").empty().append(binaryArrayPrettyPrint(binaryForPrint));
-	}
+	}*/
 
 	/*do canny edge detection*/
 	function do_canny(citra, treshold, ht, lt, sigma, kernel) {
@@ -220,10 +222,7 @@
 		});
 	});
 
-	/*onchange treshold event*/
-	$("input[name=tresholdPreprocessing]").on("change", function () {
-		preProcess(citra, this.value);
-	});
+	/*onchange event canny params*/
 
 	$("input[name=sigma]").on("change", function () {
 		const treshold 	= $("input[name=tresholdPreprocessing]").val();
@@ -261,7 +260,9 @@
 		do_canny(citra, treshold, ht, lt, sigma, kernel);
 	});
 
+	/*end of onchage canny params*/
 
+	/*train new pattern*/
 	$("#train_button").on("click", function () {
 		network.addPattern(extractedDataForTrain);
 		network.convertByCurrentAct(extractedDataForTrain);
@@ -269,22 +270,26 @@
 
 	});
 
+	/*test pattern*/
 	$("#draw").on("click", function () {
 		network.convertByCurrentAct(extractedDataForTrain);
 		$("#outputData").empty().append(binaryArrayPrettyPrint(network.recover()));
 		alert("finished");
 	});
 
+	/*clear output*/
 	$("#clearData").on("click", function () {
 		$('#outputData').empty();
 	});
 
+	/*export data*/
 	$("#saveData").on("click", function () {
 		const dataToSave = network.saveCurrentData();
 		var blob = new Blob([dataToSave], {type: "text/plain;charset=utf-8"});
   		saveAs(blob, "currentState.txt");
 	});
 
+	/*import data*/
 	$("input[name=importSaveData]").on("change", function() {
 		readTxt(this, function(res) {
 			network.importData(JSON.parse(res.target.result));

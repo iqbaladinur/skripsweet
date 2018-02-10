@@ -10,12 +10,15 @@
 	image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
 	image-rendering: pixelated;                 /* Awesome future-browsers       */
 	-ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+	width: 150px;
+	height: 150px;
 }
 .is-very-small{
-	font-size: 1pt !important;
+	font-size: 1.4pt !important;
+	letter-spacing: 1px;
 }
 #binary, #outputData{
-	height: 100px;
+	height: 150px;
 }
 .my-box{
 	border: 1px solid #e7e7e7;	
