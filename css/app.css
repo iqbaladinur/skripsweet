@@ -10,8 +10,8 @@
 	image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
 	image-rendering: pixelated;                 /* Awesome future-browsers       */
 	-ms-interpolation-mode: nearest-neighbor;   /* IE                            */
-	width: 150px;
-	height: 150px;
+	width: 80px;
+	height: 80px;
 }
 .is-very-small{
 	font-size: 1.4pt !important;

@@ -58,7 +58,7 @@ Node.prototype.addTransposedPattern = function(newPattern) {
 	// Make sure the self connection is zeroed
 	newPattern[this.index] = 0;
 	for (var i = 0; i < this.weights.length; i++) {
-		this.weights[i] = this.weights[i] + newPattern[i];
+		this.weights[i] += newPattern[i];
 	}
 }
 
@@ -75,9 +75,9 @@ Node.prototype.calculateActivation = function(activations) {
 	}
 	if (sum > 0)
 		newActivation = 1;
-	if (sum == 0)
-		newActivation = 0;
-	if (sum < 0)
+	/*if (sum == 0)
+		newActivation = 0;*/
+	if (sum <= 0)
 		newActivation = -1;
 	this.activation = newActivation;
 	return newActivation;		
@@ -90,6 +90,23 @@ function HopfieldNetwork(nodeNum=4) {
 	this.nodeNum = nodeNum; // Number of nodes that is in the network
 	this.nodes = []; // Array to contain the nodes
 	this.pattern = []; // Array to contain the learned patterns
+	this.costToRecover = 0;
+}
+
+/**
+ * [getSavedPattern description] return whole saved pattern
+ * @return {[type]} [description] array of pattern object
+ */
+HopfieldNetwork.prototype.getSavedPattern = function() {
+	return this.pattern;
+}
+
+/**
+ * [getCost description] get the loop cost, must be call after recover method
+ * @return {[type]} [description]
+ */
+HopfieldNetwork.prototype.getCost = function() {
+	return this.costToRecover;
 }
 
 /**
@@ -175,6 +192,8 @@ HopfieldNetwork.prototype.initialiseNodes = function() {
 		var nodeWeights = weights.slice(); // Shallow copy of zeroed weights
 		this.nodes[i] = new Node(weights, activation, i);
 	}
+
+	this.pattern = [];
 }
 
 /**
@@ -256,6 +275,7 @@ HopfieldNetwork.prototype.getActivations = function() {
 HopfieldNetwork.prototype.recover = function() {
 	var nodeChanged = true;
 	var activations = this.getActivations();
+	this.costToRecover = 0;
 	while (nodeChanged) {
 		nodeChanged = false; // reset nodeChanged each loop
 		var nodeOrder = this.nodes.slice(0); // nodes copy
@@ -263,11 +283,12 @@ HopfieldNetwork.prototype.recover = function() {
 		while (nodeOrder.length != 0) {
 			var ri = Math.floor(Math.random() * nodeOrder.length);
 			var node = nodeOrder[ri];
-			nodeOrder.splice(ri, 1); // remove the node
 			var act = node.calculateActivation(activations);
+			nodeOrder.splice(ri, 1); // remove the node
 			if (act !== activations[node.index]) {
 				nodeChanged = true;
 				activations[node.index] = act;
+				this.costToRecover ++;
 			}
 		}
 	}

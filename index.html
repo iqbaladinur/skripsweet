@@ -28,15 +28,15 @@
 					  		<div class="field is-horizontal">
 						  		<div class="control has-rig">
 							  		<small>Sigma</small>
-							  		<input class="input" type="number" name="sigma" value="1.4">
+							  		<input class="input" type="number" name="sigma" value="1.2">
 							  	</div>
 							  	<div class="control has-rig">
 							  		<small>Ht</small>
-							  		<input class="input" type="number" name="ht" value="100">
+							  		<input class="input" type="number" name="ht" value="30">
 							  	</div>
 							  	<div class="control has-rig">
 							  		<small>Lt</small>
-							  		<input class="input" type="number" name="lt" value="50">
+							  		<input class="input" type="number" name="lt" value="10">
 							  	</div>
 							  	<div class="control has-rig">
 							  		<small>Kernel</small>
@@ -86,6 +86,11 @@
 					  <div class="panel-block">
 					  	<button class="is-fullwidth button is-dark" id="clearData">
 					  		Clear Output View
+					  	</button>
+					  </div>
+					   <div class="panel-block">
+					  	<button class="is-fullwidth button is-dark" id="resetNetwork">
+					  		Reset Network
 					  	</button>
 					  </div>
 					  <div class="panel-block">
@@ -144,10 +149,27 @@
 				<div class="my-box" style="margin-top:10px">
 					<h1 class="title is-size-5">Output Data</h1>
 					<div class="my-box">
-						<ul>
+						<table>
+							<tbody>
+								<tr>
+									<td>Recognized As</td>
+									<td> : <b id="labelName"></b></td>
+								</tr>
+								<tr>
+									<td>Recovered pattern </td>
+									<td> : <b id="recoveredValue"></b></td>
+								</tr>
+								<tr>
+									<td>Cost ro recover</td>
+									<td> : <b id="costToRecover"></b></td>
+								</tr>
+							</tbody>
+						</table>
+						<!-- <ul>
 							<li>Recognised As : <b id="labelName"></b> </li>
 							<li>Recovered pattern : <b id="recoveredValue"></b> </li>
-						</ul>
+							<li>Cost ro recover : <b id="costToRecover"></b> </li>
+						</ul> -->
 					</div>
 				</div>
 			</div>
@@ -189,7 +211,7 @@
 		citraScale.drawFromImage(citra, true);
 		const canvas 	= document.getElementById('citraScale');
 		const canvasCanny 	= document.getElementById('citraAbu');
-		const imageData = CannyJS.canny(canvas, ht, lt, sigma, kernel, "prewitt");
+		const imageData = CannyJS.canny(canvas, ht, lt, sigma, kernel, "sobel");
 		imageData.drawOn(canvasCanny);
 		citraBiner.drawImageExcludeBorder(invertColor(citraAbu.getImageData()));
 		extractedDataForTrain = getBinaryData(citraBiner.getImageData());
@@ -205,6 +227,7 @@
 		const lt 		= $("input[name=lt]").val();
 		const kernel    = $("input[name=kernel]").val();
 		$(".file-name").empty().append(this.files[0].name);
+		$("input[name=nama_sayur]").val(this.files[0].name.split(".")[0]);
 		readURL(this, function (res) {
 			citra.onload = function () {
 				//preProcess(citra, treshold);
@@ -270,15 +293,21 @@
 
 	/*test pattern*/
 	$("#draw").on("click", function () {
-		network.convertByCurrentAct(extractedDataForTrain);
-		var outputRecovered = clearArray(network.recover());
-		let resultCompared = network.compareOutput(outputRecovered);
-		if (!resultCompared) {
-			$("#labelName").empty().append("not recognized");
-			$("#recoveredValue").empty().append("0 %");
+		if (extractedDataForTrain.length > 0) {
+			network.convertByCurrentAct(extractedDataForTrain);
+			var outputRecovered = clearArray(network.recover());
+			let resultCompared = network.compareOutput(outputRecovered);
+			if (!resultCompared) {
+				$("#labelName").empty().append("not recognized");
+				$("#recoveredValue").empty().append("0 %");
+				$("#costToRecover").empty().append(0 + " loop");
+			}else{
+				$("#labelName").empty().append(resultCompared.label);
+				$("#recoveredValue").empty().append((resultCompared.matchValue / resultCompared.totalValue * 100) + '% dari ' + resultCompared.totalValue + " titik berniai 1.");
+				$("#costToRecover").empty().append(network.getCost() + " loop");
+			}
 		}else{
-			$("#labelName").empty().append(resultCompared.label);
-			$("#recoveredValue").empty().append((resultCompared.matchValue / resultCompared.totalValue * 100) + '%');
+			alert("input data belum dimasukan.");
 		}
 
 		$("#outputData").empty().append(binaryArrayPrettyPrint(outputRecovered));
@@ -288,6 +317,13 @@
 	/*clear output*/
 	$("#clearData").on("click", function () {
 		$('#outputData').empty();
+	});
+
+	/*reset Network*/
+	$("#resetNetwork").on("click", function () {
+		network.initialiseNodes();
+		$('#outputData').empty();
+		console.log("network reseted");
 	});
 
 	/*export data*/
