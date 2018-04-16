@@ -126,11 +126,11 @@
 					<div class="columns">
 						<div class="column has-text-centered">
 							<canvas class="canvas" id="citraScale" width="80" height="80"></canvas>
-							<h1>Citra Scale (80 x 80)</h1>	
+							<h1>Citra Scale (76 x 76)</h1>	
 						</div>
 						<div class="column has-text-centered">
 							<canvas class="canvas" id="citraAbu" width="80" height="80"></canvas>
-							<h1>Canny ED (80 x 80)</h1>	
+							<h1>Canny ED (76 x 76)</h1>	
 						</div>
 						<div class="column has-text-centered">
 							<canvas class="canvas" id="citraBiner" width="76" height="76"></canvas>
@@ -138,7 +138,7 @@
 						</div>
 						<div class="column has-text-centered">
 							<div id="binary" class="is-very-small"></div>
-							<h1 style="margin-top: 5px">input array</h1>	
+							<h1 style="margin-top: 5px">input pattern</h1>	
 						</div>
 						<div class="column has-text-centered">
 							<div id="outputData" class="is-very-small"></div>
@@ -160,7 +160,7 @@
 									<td> : <b id="recoveredValue"></b></td>
 								</tr>
 								<tr>
-									<td>Cost ro recover</td>
+									<td>Cost to recover</td>
 									<td> : <b id="costToRecover"></b></td>
 								</tr>
 							</tbody>
@@ -300,11 +300,11 @@
 			if (!resultCompared) {
 				$("#labelName").empty().append("not recognized");
 				$("#recoveredValue").empty().append("0 %");
-				$("#costToRecover").empty().append(0 + " loop");
+				$("#costToRecover").empty().append(0 + " x updates");
 			}else{
 				$("#labelName").empty().append(resultCompared.label);
 				$("#recoveredValue").empty().append((resultCompared.matchValue / resultCompared.totalValue * 100) + '% dari ' + resultCompared.totalValue + " titik berniai 1.");
-				$("#costToRecover").empty().append(network.getCost() + " loop");
+				$("#costToRecover").empty().append(network.getCost() + " x updates");
 			}
 		}else{
 			alert("input data belum dimasukan.");

@@ -57,6 +57,8 @@ Node.prototype.addTransposedPattern = function(newPattern) {
 		throw "Node " + this.index + ": has a different sized weight vector than the new pattern";
 	// Make sure the self connection is zeroed
 	newPattern[this.index] = 0;
+
+	//add new weight each a pattern learned
 	for (var i = 0; i < this.weights.length; i++) {
 		this.weights[i] += newPattern[i];
 	}
@@ -175,7 +177,7 @@ HopfieldNetwork.prototype.importData = function(nodes, pattern) {
 	}
 
 	this.convertByCurrentAct(this.getActivations());
-	console.log("loaded");
+	alert("loaded");
 }
 
 /**
@@ -209,7 +211,7 @@ HopfieldNetwork.prototype.addPattern = function(patternArray) {
 	}
 	var newPattern = []; // The transposed pattern to add the node weights
 	for (var i = 0; i < patternArray.length; i++) {
-		// Calculate the transpose for the node i
+		// Calculate the transpose for the node i the hebbian rule here
 		for (var j = 0; j < patternArray.length; j++) {
 			newPattern[j] = patternArray[i] * patternArray[j];
 			if (i === j)
